@@ -8,17 +8,16 @@ foreach ($file in $csvFiles) {
     Write-Output "Found CSV file: $($file.FullName)"
 }
 
+# Clear out the output folder at the start
+$outputFolder = "$PSScriptRoot/output/"
+if (Test-Path -Path $outputFolder) {
+    Remove-Item -Path "$outputFolder/*.csv" -Force
+} else {
+    New-Item -Path $outputFolder -ItemType Directory
+}
+
 foreach ($file in $csvFiles) {
     try {
-
-    # Clear out the output folder at the start
-    $outputFolder = "$PSScriptRoot/output/"
-    if (Test-Path -Path $outputFolder) {
-        Remove-Item -Path "$outputFolder/*.csv" -Force
-    } else {
-        New-Item -Path $outputFolder -ItemType Directory
-    }
-
         # Import the CSV file
         $csvContent = Import-Csv -LiteralPath $file.FullName
 
@@ -26,20 +25,63 @@ foreach ($file in $csvFiles) {
         $lineCount = $csvContent.Count
         Write-Output "Number of lines processed in $($file.Name): $lineCount"
 
+
+        # Create a new array to store transformed data
+        $transformedData = $csvContent | ForEach-Object {
+            # Create new object with transformed data
+            [PSCustomObject]@{
+                'Date' = $_.Date
+                'Time' = $_.Time
+                'Latitude' = $_.Latitude 
+                'Longitude' = $_.Longitude
+                'Accuracy' = $_.Satellites
+                'Point' = ''
+                'Source' = $_.BoxID
+                'Network' = $_.Network
+                'PLMN' = $_.PLMN
+                'Technology' = ''
+                'Serving CID' = $_.CellID
+                'LAC / TAC' = $_.TAC
+                'Band Freq' = ''
+                'Band Num' = ''
+                'Channel' = $_.EARFCN
+                'eNB / gNB' = $_.eNB
+                'Sector ID' = $_.ShortCellID
+                'PSC / PCI' = $_.PCI
+                'Power' = $_.RSRP
+                'Quality' = $_.RSRQ
+                'N1_CID' = $_.N1_CellID
+                'N1_Channel' = $_.N1_EARFCN
+                'N1_PSC/PCI' = $_.N1_PCI
+                'N2_CID' = $_.N2_CellID
+                'N2_Channel' = $_.N2_EARFCN
+                'N2_PSC/PCI' = $_.N2_PCI
+                'N3_CID' = $_.N3_CellID
+                'N3_Channel' = $_.N3_EARFCN
+                'N3_PSC/PCI' = $_.N3_PCI
+                'N4_CID' = $_.N4_CellID
+                'N4_Channel' = $_.N4_EARFCN
+                'N4_PSC/PCI' = $_.N4_PCI
+                'N5_CID' = $_.N5_CellID
+                'N5_Channel' = $_.N5_EARFCN
+                'N5_PSC/PCI' = $_.N5_PCI
+                'N6_CID' = $_.N6_CellID
+                'N6_Channel' = $_.N6_EARFCN
+                'N6_PSC/PCI' = $_.N6_PCI
+            }
+        }
+
         # Define the output file path
         $outputFilePath = Join-Path -Path "$PSScriptRoot/output/" -ChildPath $file.Name
 
-
-    # Remove the specified columns from each row
-    foreach ($row in $csvContent) {
-        if ($column -match '^N(7|8|9|1[0-5])*') {
-            $row.PSObject.Properties.Remove($column)
-        }
-}
-
         try {
-            # Export the processed CSV content to a new file in the output folder without quotes
-            $csvContent | Export-Csv -Path $outputFilePath -NoTypeInformation -Force -UseQuotes Never
+            # Export the transformed CSV content to a new file in the output folder
+            $transformedData | Export-Csv -Path $outputFilePath -NoTypeInformation -Force
+            
+            # Remove quotes from the output file if needed (compatible with all PowerShell versions)
+            $content = Get-Content $outputFilePath
+            $content | ForEach-Object { $_ -replace '\"([^\"]*?)\"', '$1' } | Set-Content $outputFilePath
+            
             Write-Output "Processed file saved to: $outputFilePath"
         } catch {
             Write-Error "Failed to process file $($file.FullName): $_"
