@@ -4,7 +4,7 @@ A script to parse a mobile CSV file to format it for volunteer search app
 
 * Download the zip
 * Unzip and add the files you want to convert to the data folder
-* Shift+right-click in downloaded folder
+* Shift+right-click in downloaded folder, then click open PowerShell window from here
 
 Run the script with:
 
