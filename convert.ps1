@@ -20,6 +20,8 @@ foreach ($file in $csvFiles) {
     try {
         # Import the CSV file
         $csvContent = Import-Csv -LiteralPath $file.FullName
+        # Filter out rows where CellID is blank
+        $csvContent = $csvContent | Where-Object { -not [string]::IsNullOrWhiteSpace($_.CellID) }
 
         # Output the number of lines processed
         $lineCount = $csvContent.Count
@@ -37,9 +39,23 @@ foreach ($file in $csvFiles) {
                 'Accuracy' = $_.Satellites
                 'Point' = ''
                 'Source' = $_.BoxID
-                'Network' = $_.Network
+                'Network' = $(
+                    switch ($_.PLMN) {
+                        '23410' { 'O2 - UK' }
+                        '23415' { 'Vodafone UK' }
+                        '23420' { '3' }
+                        '23430' { 'EE' }
+                        '23433' { 'EE' }
+                        default { $_.Network }
+                    }
+                )
                 'PLMN' = $_.PLMN
-                'Technology' = ''
+                'Technology' = $(
+                    if ($file.Name -like '*2G*') { '2G' }
+                    elseif ($file.Name -like '*3G*') { '3G' }
+                    elseif ($file.Name -like '*4G*') { '4G' }
+                    else { '' }
+                )
                 'Serving CID' = $_.CellID
                 'LAC / TAC' = $_.TAC
                 'Band Freq' = ''
@@ -70,9 +86,9 @@ foreach ($file in $csvFiles) {
                 'N6_PSC/PCI' = $_.N6_PCI
             }
         }
-
-        # Define the output file path
-        $outputFilePath = Join-Path -Path "$PSScriptRoot/output/" -ChildPath $file.Name
+        # Append FCX to the output filename
+        $outputFileName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name) + "-FCX" + [System.IO.Path]::GetExtension($file.Name)
+        $outputFilePath = Join-Path -Path "$PSScriptRoot/output/" -ChildPath $outputFileName
 
         try {
             # Export the transformed CSV content to a new file in the output folder
