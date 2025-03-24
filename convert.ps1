@@ -1,7 +1,6 @@
 # Get all CSV files in the directory
 $csvFiles = Get-ChildItem -LiteralPath "$PSScriptRoot/data/" -Filter "*.csv"
 
-
 Write-Output "Starting to process CSV files..."
 
 # Print out the CSV files found
@@ -16,8 +15,6 @@ if (Test-Path -Path $outputFolder) {
 } else {
     New-Item -Path $outputFolder -ItemType Directory
 }
-
-
 
 foreach ($file in $csvFiles) {
     try {
@@ -48,7 +45,7 @@ foreach ($file in $csvFiles) {
             
             # Calculate percentage
             $percentComplete = [math]::Min(($lineCount / $totalLines) * 100, 100)
-            
+
             # Show progress with percentage
             Write-Progress -Activity "Processing $($file.Name)" -Status "Processing line $lineCount of $totalLines ($([math]::Round($percentComplete))%)" -PercentComplete $percentComplete
 
