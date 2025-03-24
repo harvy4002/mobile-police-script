@@ -1,6 +1,7 @@
 # Get all CSV files in the directory
 $csvFiles = Get-ChildItem -LiteralPath "$PSScriptRoot/data/" -Filter "*.csv"
 
+
 Write-Output "Starting to process CSV files..."
 
 # Print out the CSV files found
@@ -16,6 +17,7 @@ if (Test-Path -Path $outputFolder) {
     New-Item -Path $outputFolder -ItemType Directory
 }
 
+
 foreach ($file in $csvFiles) {
     try {
         # Import the CSV file
@@ -26,7 +28,6 @@ foreach ($file in $csvFiles) {
         # Output the number of lines processed
         $lineCount = $csvContent.Count
         Write-Output "Number of lines processed in $($file.Name): $lineCount"
-
 
         # Create a new array to store transformed data
         $transformedData = $csvContent | ForEach-Object {
@@ -57,33 +58,110 @@ foreach ($file in $csvFiles) {
                     else { '' }
                 )
                 'Serving CID' = $_.CellID
-                'LAC / TAC' = $_.TAC
+                'LAC / TAC' = $(
+                    if ($_.TAC) { $_.TAC }
+                    else { $_.LAC }
+                )
                 'Band Freq' = ''
                 'Band Num' = ''
-                'Channel' = $_.EARFCN
+                'Channel' = $(
+                    if ($_.EARFCN) { $_.EARFCN } 
+                    else { $_.Frequency }
+                )
                 'eNB / gNB' = $_.eNB
                 'Sector ID' = $_.ShortCellID
-                'PSC / PCI' = $_.PCI
-                'Power' = $_.RSRP
-                'Quality' = $_.RSRQ
-                'N1_CID' = $_.N1_CellID
-                'N1_Channel' = $_.N1_EARFCN
-                'N1_PSC/PCI' = $_.N1_PCI
-                'N2_CID' = $_.N2_CellID
-                'N2_Channel' = $_.N2_EARFCN
-                'N2_PSC/PCI' = $_.N2_PCI
-                'N3_CID' = $_.N3_CellID
-                'N3_Channel' = $_.N3_EARFCN
-                'N3_PSC/PCI' = $_.N3_PCI
-                'N4_CID' = $_.N4_CellID
-                'N4_Channel' = $_.N4_EARFCN
-                'N4_PSC/PCI' = $_.N4_PCI
-                'N5_CID' = $_.N5_CellID
-                'N5_Channel' = $_.N5_EARFCN
-                'N5_PSC/PCI' = $_.N5_PCI
-                'N6_CID' = $_.N6_CellID
-                'N6_Channel' = $_.N6_EARFCN
-                'N6_PSC/PCI' = $_.N6_PCI
+                'PSC / PCI' = $(
+                    if ($_.PSC) { $_.PSC }
+                    else { $_.PCI }
+                )
+                'Power' = $(
+                    if ($_.RSRP) { $_.RSRP }
+                    elseif ($_.RSCP) { $_.RSCP }
+                    else { '' }
+                )
+                'Quality' = $(
+                    if ($_.RSRQ) { $_.RSRQ }
+                    elseif ($_.ECIO) { $_.ECIO }
+                    else { '' }
+                )
+                'N1_CID' = $(
+                    if ($_.A1_CellID) { $_.A1_CellID }
+                    else { $_.N1_CellID }
+                )
+                'N1_Channel' = $(
+                    if ($_.N1_EARFCN) { $_.N1_EARFCN }
+                    elseif ($_.A1_Frequency) { $_.A1_Frequency }
+                    else { '' }
+                )
+                'N1_PSC/PCI' = $(
+                    if ($_.A1_PSC) { $_.A1_PSC }
+                    else { $_.N1_PCI }
+                )
+                'N2_CID' = $(
+                    if ($_.A2_CellID) { $_.A2_CellID }
+                    else { $_.N2_CellID }
+                )
+                'N2_Channel' = $(
+                    if ($_.N2_EARFCN) { $_.N2_EARFCN }
+                    elseif ($_.A2_Frequency) { $_.A2_Frequency }
+                    else { '' }
+                )
+                'N2_PSC/PCI' = $(
+                    if ($_.A2_PSC) { $_.A2_PSC }
+                    else { $_.N2_PCI }
+                )
+                'N3_CID' = $(
+                    if ($_.A3_CellID) { $_.A3_CellID }
+                    else { $_.N3_CellID }
+                )
+                'N3_Channel' = $(
+                    if ($_.N3_EARFCN) { $_.N3_EARFCN }
+                    elseif ($_.A3_Frequency) { $_.A3_Frequency }
+                    else { '' }
+                )
+                'N3_PSC/PCI' = $(
+                    if ($_.A3_PSC) { $_.A3_PSC }
+                    else { $_.N3_PCI }
+                )
+                'N4_CID' = $(
+                    if ($_.A4_CellID) { $_.A4_CellID }
+                    else { $_.N4_CellID }
+                )
+                'N4_Channel' = $(
+                    if ($_.N4_EARFCN) { $_.N4_EARFCN }
+                    elseif ($_.A4_Frequency) { $_.A4_Frequency }
+                    else { '' }
+                )
+                'N4_PSC/PCI' = $(
+                    if ($_.A4_PSC) { $_.A4_PSC }
+                    else { $_.N4_PCI }
+                )
+                'N5_CID' = $(
+                    if ($_.A5_CellID) { $_.A5_CellID }
+                    else { $_.N5_CellID }
+                )
+                'N5_Channel' = $(
+                    if ($_.N5_EARFCN) { $_.N5_EARFCN }
+                    elseif ($_.A5_Frequency) { $_.A5_Frequency }
+                    else { '' }
+                )
+                'N5_PSC/PCI' = $(
+                    if ($_.A5_PSC) { $_.A5_PSC }
+                    else { $_.N5_PCI }
+                )
+                'N6_CID' = $(
+                    if ($_.A6_CellID) { $_.A6_CellID }
+                    else { $_.N6_CellID }
+                )
+                'N6_Channel' = $(
+                    if ($_.N6_EARFCN) { $_.N6_EARFCN }
+                    elseif ($_.A6_Frequency) { $_.A6_Frequency }
+                    else { '' }
+                )
+                'N6_PSC/PCI' = $(
+                    if ($_.A6_PSC) { $_.A6_PSC }
+                    else { $_.N6_PCI }
+                )
             }
         }
         # Append FCX to the output filename
