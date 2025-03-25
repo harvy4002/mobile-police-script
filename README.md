@@ -21,3 +21,7 @@ pwsh ./convert.ps1
 This will work with 3G and 4G files. They need to have 3G or 4G in the name for the the technology column.
 
 Note all files will be deleted from the output folder when you are done.
+
+Large test files are here: https://1drv.ms/f/c/4752ca10e441ee13/EitmDcp-AJFNoihAoTxJTBUB8GinEnqOS4q5uioQ6CHvxA?e=rvXgIN
+
+Dump of something that seems like a spec is here: https://1drv.ms/u/c/4752ca10e441ee13/Ea91Xf1AIkpNiASfAagGRSgBi2qWdzQtIx3dOY0eQdvyXw?e=000Zgn
