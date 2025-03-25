@@ -35,7 +35,7 @@ foreach ($file in $csvFiles) {
             $header -split ',' | ForEach-Object { $i = 0 } { $row[$_] = $fields[$i++] }
 
             # Skip if CellID is empty
-            if ([string]::IsNullOrWhiteSpace($row.CellID)) { continue }
+            if ([string]::IsNullOrWhiteSpace($row.CellID) -or [string]::IsNullOrWhiteSpace($row.Latitude)) { continue }
 
             $lineCount++
             # Get total line count if not already calculated
@@ -65,10 +65,15 @@ foreach ($file in $csvFiles) {
                          else { '' }
 
             $channel = if ($row.EARFCN) { $row.EARFCN }
+                      elseif ($row.UARFCN) { $row.UARFCN }
+                      elseif ($row.ARFCN) { $row.ARFCN }
                       else { $row.Frequency }
 
             $power = if ($row.RSRP) { $row.RSRP }
                     elseif ($row.RSCP) { $row.RSCP }
+                    elseif ($row.Power) { $row.Power }
+                    elseif ($row['RSSI (dBm)']) { $row['RSSI (dBm)'] }
+                    elseif ($row['RSCP (dBm)']) { $row['RSCP (dBm)'] }
                     else { '' }
 
             $quality = if ($row.RSRQ) { $row.RSRQ }
@@ -94,27 +99,27 @@ foreach ($file in $csvFiles) {
                 $channel,
                 $row.eNB,
                 $row.ShortCellID,
-                $(if ($row.PSC) { $row.PSC } else { $row.PCI }),
+                $(if ($row.PSC) { $row.PSC } elseif ($row.BSIC) { $row.BSIC } else { $row.PCI }),
                 $power,
                 $quality,
                 $(if ($row.A1_CellID) { $row.A1_CellID } else { $row.N1_CellID }),
-                $(if ($row.N1_EARFCN) { $row.N1_EARFCN } elseif ($row.A1_Frequency) { $row.A1_Frequency } else { '' }),
-                $(if ($row.A1_PSC) { $row.A1_PSC } else { $row.N1_PCI }),
+                $(if ($row.N1_EARFCN) { $row.N1_EARFCN } elseif ($row.A1_Frequency) { $row.A1_Frequency } elseif ($row.A1_Freq) { $row.A1_Freq } elseif ($row.N1_ARFCN) { $row.N1_ARFCN } else { '' }),
+                $(if ($row.A1_PSC) { $row.A1_PSC } elseif ($row.N1_BSIC) { $row.N1_BSIC } else { $row.N1_PCI }),
                 $(if ($row.A2_CellID) { $row.A2_CellID } else { $row.N2_CellID }),
-                $(if ($row.N2_EARFCN) { $row.N2_EARFCN } elseif ($row.A2_Frequency) { $row.A2_Frequency } else { '' }),
-                $(if ($row.A2_PSC) { $row.A2_PSC } else { $row.N2_PCI }),
+                $(if ($row.N2_EARFCN) { $row.N2_EARFCN } elseif ($row.A2_Frequency) { $row.A2_Frequency } elseif ($row.A2_Freq) { $row.A2_Freq } elseif ($row.N2_ARFCN) { $row.N2_ARFCN } else { '' }),
+                $(if ($row.A2_PSC) { $row.A2_PSC } elseif ($row.N2_BSIC) { $row.N2_BSIC } else { $row.N2_PCI }),
                 $(if ($row.A3_CellID) { $row.A3_CellID } else { $row.N3_CellID }),
-                $(if ($row.N3_EARFCN) { $row.N3_EARFCN } elseif ($row.A3_Frequency) { $row.A3_Frequency } else { '' }),
-                $(if ($row.A3_PSC) { $row.A3_PSC } else { $row.N3_PCI }),
+                $(if ($row.N3_EARFCN) { $row.N3_EARFCN } elseif ($row.A3_Frequency) { $row.A3_Frequency } elseif ($row.A3_Freq) { $row.A3_Freq } elseif ($row.N3_ARFCN) { $row.N3_ARFCN } else { '' }),
+                $(if ($row.A3_PSC) { $row.A3_PSC } elseif ($row.N3_BSIC) { $row.N3_BSIC } else { $row.N3_PCI }),
                 $(if ($row.A4_CellID) { $row.A4_CellID } else { $row.N4_CellID }),
-                $(if ($row.N4_EARFCN) { $row.N4_EARFCN } elseif ($row.A4_Frequency) { $row.A4_Frequency } else { '' }),
-                $(if ($row.A4_PSC) { $row.A4_PSC } else { $row.N4_PCI }),
+                $(if ($row.N4_EARFCN) { $row.N4_EARFCN } elseif ($row.A4_Frequency) { $row.A4_Frequency } elseif ($row.A4_Freq) { $row.A4_Freq } elseif ($row.N4_ARFCN) { $row.N4_ARFCN } else { '' }),
+                $(if ($row.A4_PSC) { $row.A4_PSC } elseif ($row.N4_BSIC) { $row.N4_BSIC } else { $row.N4_PCI }),
                 $(if ($row.A5_CellID) { $row.A5_CellID } else { $row.N5_CellID }),
-                $(if ($row.N5_EARFCN) { $row.N5_EARFCN } elseif ($row.A5_Frequency) { $row.A5_Frequency } else { '' }),
-                $(if ($row.A5_PSC) { $row.A5_PSC } else { $row.N5_PCI }),
+                $(if ($row.N5_EARFCN) { $row.N5_EARFCN } elseif ($row.A5_Frequency) { $row.A5_Frequency } elseif ($row.A5_Freq) { $row.A5_Freq } elseif ($row.N5_ARFCN) { $row.N5_ARFCN } else { '' }),
+                $(if ($row.A5_PSC) { $row.A5_PSC } elseif ($row.N5_BSIC) { $row.N5_BSIC } else { $row.N5_PCI }),
                 $(if ($row.A6_CellID) { $row.A6_CellID } else { $row.N6_CellID }),
-                $(if ($row.N6_EARFCN) { $row.N6_EARFCN } elseif ($row.A6_Frequency) { $row.A6_Frequency } else { '' }),
-                $(if ($row.A6_PSC) { $row.A6_PSC } else { $row.N6_PCI })
+                $(if ($row.N6_EARFCN) { $row.N6_EARFCN } elseif ($row.A6_Frequency) { $row.A6_Frequency } elseif ($row.A6_Freq) { $row.A6_Freq } elseif ($row.N6_ARFCN) { $row.N6_ARFCN } else { '' }),
+                $(if ($row.A6_PSC) { $row.A6_PSC } elseif ($row.N6_BSIC) { $row.N6_BSIC } else { $row.N6_PCI })
             ) -join ','
 
             $writer.WriteLine($transformedLine)
