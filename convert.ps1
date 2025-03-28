@@ -34,8 +34,8 @@ foreach ($file in $csvFiles) {
             $row = @{}
             $header -split ',' | ForEach-Object { $i = 0 } { $row[$_] = $fields[$i++] }
 
-            # Skip if CellID is empty
-            if ([string]::IsNullOrWhiteSpace($row.CellID) -or [string]::IsNullOrWhiteSpace($row.Latitude)) { continue }
+            # Skip if CellID is empty or values are 0
+            if ([string]::IsNullOrWhiteSpace($row.CellID) -or [string]::IsNullOrWhiteSpace($row.Latitude) -or $row.CellID -eq "0" -or $row.Latitude -eq "0") { continue }
 
             $lineCount++
             # Get total line count if not already calculated
