@@ -50,7 +50,15 @@ foreach ($file in $csvFiles) {
             Write-Progress -Activity "Processing $($file.Name)" -Status "Processing line $lineCount of $totalLines ($([math]::Round($percentComplete))%)" -PercentComplete $percentComplete
 
             # Transform the data
-            $network = switch ($row.PLMN) {
+            # Extract PLMN from Network (MCC MNC) field if present
+            $plmn = if ($row.'Network (MCC MNC)' -match '\((\d{3}\s\d{2})\)') {
+                $matches[1] -replace '\s',''
+                $row.PLMN = $matches[1] -replace '\s'
+            } else {
+                $row.PLMN
+            }
+
+            $network = switch ($plmn) {
                 '23410' { 'O2 - UK' }
                 '23415' { 'Vodafone UK' }
                 '23420' { '3' }

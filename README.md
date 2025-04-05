@@ -18,7 +18,7 @@ Run the script with:
 pwsh ./convert.ps1
 ```
 
-This will work with 3G and 4G files. They need to have 3G or 4G in the name for the the technology column.
+This will work with 2G, 3G and 4G files. They need to have 2G or 3G or 4G in the name for the the technology column.
 
 Note all files will be deleted from the output folder when you are done.
 
