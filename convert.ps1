@@ -49,6 +49,11 @@ foreach ($file in $csvFiles) {
             # Show progress with percentage
             Write-Progress -Activity "Processing $($file.Name)" -Status "Processing line $lineCount of $totalLines ($([math]::Round($percentComplete))%)" -PercentComplete $percentComplete
 
+            # If BoxID is empty then set Source to "Forensic Compass"
+            if ([string]::IsNullOrWhiteSpace($row.BoxID)) {
+                $row.BoxID = "Forensic Compass"
+            }
+
             # Transform the data
             # Extract PLMN from Network (MCC MNC) field if present
             $plmn = if ($row.'Network (MCC MNC)' -match '\((\d{3}\s\d{2})\)') {
