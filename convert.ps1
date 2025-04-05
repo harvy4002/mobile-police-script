@@ -32,6 +32,7 @@ foreach ($file in $csvFiles) {
             # Parse CSV line into object
             $fields = $line -split ','
             $row = @{}
+            $header = ($header -split ',').ForEach({ $_.TrimStart() }) -join ','
             $header -split ',' | ForEach-Object { $i = 0 } { $row[$_] = $fields[$i++] }
 
             # Skip if CellID/Serving CID or Latitude is empty or values are 0
@@ -75,7 +76,7 @@ foreach ($file in $csvFiles) {
 
             # Transform the data
             # Extract PLMN from Network (MCC MNC) field if present
-            $plmn = if ($row.'Network (MCC MNC)' -match '\((\d{3}\s\d{2})\)') {
+            $plmn = if ($row.'Network (MCC MNC)' -match '\((\d{3}\s\d{2})\)' -or $row.Network -match '\((\d{3}\s\d{2})\)') {
                 $matches[1] -replace '\s',''
                 $row.PLMN = $matches[1] -replace '\s'
             } else {
