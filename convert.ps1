@@ -54,6 +54,25 @@ foreach ($file in $csvFiles) {
                 $row.BoxID = "Forensic Compass"
             }
 
+            # If Point is populated then set it as a field
+            if ($row.Point) {
+                $row.Point = $row.Point
+            } else {
+                $row.Point = ''
+            }
+
+            # If Serviing CID exists then set it as CellID
+            if ($row.'Serving CID') {
+                $row.CellID = $row.'Serving CID'
+            }
+
+            # If BAND exists then set it as Band Freq
+            if ($row.BAND) {
+                $row.'Band Freq' = $row.BAND
+            } else {
+                $row.'Band Freq' = ''
+            }
+
             # Transform the data
             # Extract PLMN from Network (MCC MNC) field if present
             $plmn = if ($row.'Network (MCC MNC)' -match '\((\d{3}\s\d{2})\)') {
@@ -95,19 +114,19 @@ foreach ($file in $csvFiles) {
 
             # Write transformed line
             $transformedLine = @(
-                $row.Date,                # Date
-                $row.Time,                # Time
-                $row.Latitude,            # Latitude
-                $row.Longitude,           # Longitude
-                $row.Satellites,          # Accuracy
-                '',                       # Point
+                $row.Date,               # Date
+                $row.Time,               # Time
+                $row.Latitude,           # Latitude
+                $row.Longitude,          # Longitude
+                $row.Satellites,         # Accuracy
+                $row.Point,              # Point
                 $row.BoxID,              # Source
                 $network,                # Network
                 $row.PLMN,               # PLMN
                 $technology,             # Technology
                 $row.CellID,             # Serving CID
                 $(if ($row.TAC) { $row.TAC } else { $row.LAC }), # LAC / TAC
-                '',                      # Band Freq
+                $row.'Band Freq',        # Band Freq
                 '',                      # Band Num
                 $channel,                # Channel
                 $row.eNB,                # eNB / gNB
